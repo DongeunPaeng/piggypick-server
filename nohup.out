@@ -759,3 +759,41 @@ db connected...⬆️
 /home/ubuntu/piggypick/server/public/index.html
 [0mGET /index.php?s=/Index/\think\app/invokefunction&function=call_user_func_array&vars[0]=md5&vars[1][]=HelloThinkPHP [32m200 [0m0.851 ms - 701[0m
 [0mGET / [32m200 [0m0.588 ms - 701[0m
+
+> server@0.0.0 start /home/ubuntu/piggypick/server
+> node ./bin/www
+
+internal/modules/cjs/loader.js:895
+  throw err;
+  ^
+
+Error: Cannot find module 'express-session'
+Require stack:
+- /home/ubuntu/piggypick/server/app.js
+- /home/ubuntu/piggypick/server/bin/www
+    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:892:15)
+    at Function.Module._load (internal/modules/cjs/loader.js:742:27)
+    at Module.require (internal/modules/cjs/loader.js:964:19)
+    at require (internal/modules/cjs/helpers.js:88:18)
+    at Object.<anonymous> (/home/ubuntu/piggypick/server/app.js:7:17)
+    at Module._compile (internal/modules/cjs/loader.js:1075:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1096:10)
+    at Module.load (internal/modules/cjs/loader.js:940:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:781:14)
+    at Module.require (internal/modules/cjs/loader.js:964:19) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/ubuntu/piggypick/server/app.js',
+    '/home/ubuntu/piggypick/server/bin/www'
+  ]
+}
+npm ERR! code ELIFECYCLE
+npm ERR! errno 1
+npm ERR! server@0.0.0 start: `node ./bin/www`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the server@0.0.0 start script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/ubuntu/.npm/_logs/2020-09-08T19_01_36_100Z-debug.log
