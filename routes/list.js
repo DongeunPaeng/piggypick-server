@@ -1,7 +1,10 @@
 const express = require("express");
 const mysql = require("mysql");
+const axios = require('axios');
 
 const router = express.Router();
+
+console.log(process.env.SLACK_HOOK_URL);
 
 let connection;
 
@@ -68,6 +71,9 @@ router.post("/", function(req, res, next) {
       status: 200,
       message: "New restaurant registered."
     });
+    axios.post(process.env.SLACK_HOOK_URL, {
+      text: `New Restaurant registered: ${name}`
+    }).then(() => console.log('ok')).catch(err => console.log(err));
   });
 });
 
