@@ -20,13 +20,8 @@ app.set("view engine", "jade");
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
-<<<<<<< HEAD
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
-=======
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
->>>>>>> a73736602ca46cedf26cb3e5e0681aff96972ffc
 
 app.use("/api/list", listRouter);
 app.use("/auth", authRouter);
