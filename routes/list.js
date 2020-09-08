@@ -1,9 +1,7 @@
 const express = require("express");
 const mysql = require("mysql");
-const dotenv = require("dotenv");
 
 const router = express.Router();
-dotenv.config();
 
 let connection;
 
