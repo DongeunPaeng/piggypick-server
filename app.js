@@ -1,11 +1,13 @@
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
+const session = require("express-session");
 
 const listRouter = require("./routes/list");
+const authRouter = require("./routes/auth");
 
 const app = express();
 app.use(cors());
@@ -17,10 +19,11 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 
 // app.use("/", indexRouter);
 app.use("/api/list", listRouter);
+app.use("/auth", authRouter);
 app.use(express.static(path.join(__dirname, "public")));
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
