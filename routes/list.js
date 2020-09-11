@@ -38,7 +38,7 @@ handleDisconnect();
 
 /* GET list */
 router.get("/", function(req, res, next) {
-  const sql = `select name from restaurants`;
+  const sql = `select name from restaurants order by date desc`;
   connection.query(sql, (err, data, fields) => {
     if (err) throw err;
     restaurants = data;
