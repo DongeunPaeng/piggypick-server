@@ -62,7 +62,7 @@ router.post("/", (req, res, next) => {
       if (rightPassword !== password) {
         res.sendStatus(400);
       } else {
-        const sql3 = `insert into users_teams_roles (user_id, team_id, role, date) values (?, ?, 1, now())`; // TODO: change user_id from 1 to params
+        const sql3 = `insert into users_teams_roles (user_id, team_id, role, date) values (?, ?, 1, now())`;
         connection.query(sql3, [userId, id], (err, data, fields) => {
           if (err) throw err;
           res.json({
@@ -73,6 +73,28 @@ router.post("/", (req, res, next) => {
         });
       }
     });
+  });
+});
+
+router.post("/make", (req, res, next) => {
+  const {
+    body: { password, name }
+  } = req;
+  const sql = `insert into teams (password, name, manager_id, date) values (?, ?, 1, now())`;
+  connection.query(sql, [password, name], (err, data, fields) => {
+    if (err) throw err;
+    connection.query(
+      "select manager_id, id from teams where id = last_insert_id()",
+      (err, data, fields) => {
+        const userId = data[0].manager_id;
+        const teamId = data[0].id;
+        const sql2 = `insert into users_teams_roles (user_id, team_id, role, date) values (?, ?, 3, now())`;
+        connection.query(sql2, [userId, teamId], (err, data, fields) => {
+          if (err) throw err;
+          res.sendStatus(200);
+        });
+      }
+    );
   });
 });
 
