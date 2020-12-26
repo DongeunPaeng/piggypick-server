@@ -42,11 +42,22 @@ router.get("/:id", function(req, res, next) {
   const {
     params: { id }
   } = req;
-  const sql = `select A.name from restaurants A, restaurants_teams B where B.restaurant_id = A.id and B.team_id = ? order by date desc`;
-  connection.query(sql, id, (err, data, fields) => {
-    if (err) throw err;
-    res.status(200).send(data);
-  });
+  connection.query(
+    `select id from teams where id = ?`,
+    id,
+    (err, data, fields) => {
+      if (err) throw err;
+      if (data[0] === undefined) {
+        res.sendStatus(404);
+      } else {
+        const sql = `select A.name, A.id, C.email from restaurants A, restaurants_teams B, users C where B.restaurant_id = A.id and A.author_id = C.id and B.team_id = ? order by A.date desc`;
+        connection.query(sql, id, (err, data, fields) => {
+          if (err) throw err;
+          res.status(200).send(data);
+        });
+      }
+    }
+  );
 });
 
 router.delete("/", function(req, res, next) {
@@ -65,21 +76,29 @@ router.delete("/", function(req, res, next) {
 
 router.post("/", function(req, res, next) {
   const {
-    body: { name }
+    body: { uid, name, teamId }
   } = req;
-  const sql = `insert into restaurants (name, visits, date) values (?, 0, now())`;
-  connection.query(sql, name, (err, data, fields) => {
+  const sql1 = `select id from users where uid = ?`;
+  connection.query(sql1, uid, (err, data, fields) => {
     if (err) throw err;
-    res.json({
-      status: 200,
-      message: "New restaurant registered."
+    const id = data[0].id;
+    const sql2 = `insert into restaurants (name, visits, date, author_id) values (?, 0, now(), ?)`;
+    connection.query(sql2, [name, id], (err, data, fields) => {
+      if (err) throw err;
+      const sql3 = `insert into restaurants_teams (restaurant_id, team_id) values (?, ?)`;
+      connection.query(sql3, [data.insertId, teamId], (err, data, fields) => {
+        res.json({
+          status: 200,
+          message: "New restaurant registered."
+        });
+        axios
+          .post(process.env.SLACK_HOOK_URL, {
+            text: `New Restaurant registered: ${name} by ${id}`
+          })
+          .then(() => console.log("ok"))
+          .catch(err => console.log(err));
+      });
     });
-    axios
-      .post(process.env.SLACK_HOOK_URL, {
-        text: `New Restaurant registered: ${name}`
-      })
-      .then(() => console.log("ok"))
-      .catch(err => console.log(err));
   });
 });
 

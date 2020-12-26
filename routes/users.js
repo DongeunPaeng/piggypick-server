@@ -36,6 +36,29 @@ const handleDisconnect = () => {
 
 handleDisconnect();
 
+router.get("/:params", (req, res, next) => {
+  const {
+    params: { params }
+  } = req;
+  const uid = params.split("-")[2];
+  const teamId = params.split("-")[0];
+
+  const sql1 = `select id from users where uid = ?`;
+  connection.query(sql1, uid, (err, data, fields) => {
+    if (err) throw err;
+    const userId = data[0].id;
+    const sql2 = `select user_id from users_teams_roles where user_id = ? and team_id = ?`;
+    connection.query(sql2, [userId, teamId], (err, data, fields) => {
+      if (err) throw err;
+      if (data[0] === undefined) {
+        res.sendStatus(403);
+      } else {
+        res.status(200).send(data);
+      }
+    });
+  });
+});
+
 router.get("/:uid/teams", (req, res, next) => {
   const {
     params: { uid }

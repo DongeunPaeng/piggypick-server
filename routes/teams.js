@@ -41,7 +41,6 @@ router.get("/", function(req, res, next) {
   const sql = `select id, name from teams order by date desc`;
   connection.query(sql, (err, data, fields) => {
     if (err) throw err;
-    teams = data;
     res.status(200).send(data);
   });
 });
@@ -49,16 +48,31 @@ router.get("/", function(req, res, next) {
 // POST teams
 router.post("/", (req, res, next) => {
   const {
-    body: { id }
+    body: { id, password, uid }
   } = req;
-  const sql = `insert into users_teams_roles (user_id, team_id, role) values (1, ?, 0)`;
-  connection.query(sql, id, (err, data, fields) => {
+
+  const sql1 = `select id from users where uid = ?`;
+  connection.query(sql1, uid, (err, data, fields) => {
     if (err) throw err;
-    res.json({
-      status: 200,
-      message: "Newly joined to the team."
+    const userId = data[0].id;
+    const sql2 = `select password from teams where id = ?`;
+    connection.query(sql2, id, (err, data, fields) => {
+      if (err) throw err;
+      rightPassword = data[0].password;
+      if (rightPassword !== password) {
+        res.sendStatus(400);
+      } else {
+        const sql3 = `insert into users_teams_roles (user_id, team_id, role, date) values (?, ?, 1, now())`; // TODO: change user_id from 1 to params
+        connection.query(sql3, [userId, id], (err, data, fields) => {
+          if (err) throw err;
+          res.json({
+            status: 200,
+            message: "Newly joined to the team."
+          });
+          // SLACK alert needed
+        });
+      }
     });
-    // SLACK alert needed
   });
 });
 
