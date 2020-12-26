@@ -14,7 +14,7 @@ const handleDisconnect = () => {
       console.log("error when connecting to db:", err);
       setTimeout(handleDisconnect, 2000);
     }
-    console.log('db connected...⬆️')
+    console.log('db.js: db connected...⬆️')
   });
 
   connection.on("error", err => {

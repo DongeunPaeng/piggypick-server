@@ -1,10 +1,11 @@
 const express = require("express");
 const mysql = require("mysql");
-const axios = require('axios');
+const axios = require("axios");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const router = express.Router();
-
-console.log(process.env.SLACK_HOOK_URL);
 
 let connection;
 
@@ -21,7 +22,7 @@ const handleDisconnect = () => {
       console.log("error when connecting to db:", err);
       setTimeout(handleDisconnect, 2000);
     }
-    console.log("db connected...⬆️");
+    console.log("route: db connected...⬆️");
   });
 
   connection.on("error", err => {
@@ -36,12 +37,14 @@ const handleDisconnect = () => {
 
 handleDisconnect();
 
-/* GET list */
-router.get("/", function(req, res, next) {
-  const sql = `select name from restaurants order by date desc`;
-  connection.query(sql, (err, data, fields) => {
+/* GET items */
+router.get("/:id", function(req, res, next) {
+  const {
+    params: { id }
+  } = req;
+  const sql = `select A.name from restaurants A, restaurants_teams B where B.restaurant_id = A.id and B.team_id = ? order by date desc`;
+  connection.query(sql, id, (err, data, fields) => {
     if (err) throw err;
-    restaurants = data;
     res.status(200).send(data);
   });
 });
@@ -71,9 +74,12 @@ router.post("/", function(req, res, next) {
       status: 200,
       message: "New restaurant registered."
     });
-    axios.post(process.env.SLACK_HOOK_URL, {
-      text: `New Restaurant registered: ${name}`
-    }).then(() => console.log('ok')).catch(err => console.log(err));
+    axios
+      .post(process.env.SLACK_HOOK_URL, {
+        text: `New Restaurant registered: ${name}`
+      })
+      .then(() => console.log("ok"))
+      .catch(err => console.log(err));
   });
 });
 

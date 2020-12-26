@@ -1,16 +1,16 @@
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
-// const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
 
-const listRouter = require("./routes/list");
-const authRouter = require("./routes/auth");
+const itemRouter = require("./routes/items");
+const teamRouter = require("./routes/teams");
+const userRouter = require("./routes/users");
 
 const app = express();
 
-console.log(path.join(__dirname, "public", "index.html"));
+console.log('app.js: ', path.join(__dirname, "public", "index.html"));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -20,15 +20,16 @@ app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(cookieParser());
 
-app.use("/api/list", listRouter);
-app.use("/auth", authRouter);
+app.use("/api/items", itemRouter);
+app.use("/api/teams", teamRouter);
+app.use("/api/users", userRouter);
+
 app.use(express.static(path.join(__dirname, "public")));
 if(process.env.NODE_ENV === "production") {
   app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
-    console.log(path.join(__dirname, "public", "index.html"))
+    console.log('app.js-2: ', path.join(__dirname, "public", "index.html"))
   });
 }
 
