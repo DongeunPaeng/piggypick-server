@@ -84,9 +84,7 @@ router.post("/", (req, res, next) => {
     body: { uid, email }
   } = req;
 
-  console.log(uid, email);
-
-  const sql = `insert ignore into users (email, uid) values (?, ?)`;
+  const sql = `insert ignore into users (email, uid, date) values (?, ?, now())`;
   connection.query(sql, [email, uid], (err, _, __) => {
     if (err) throw err;
     res.json({
